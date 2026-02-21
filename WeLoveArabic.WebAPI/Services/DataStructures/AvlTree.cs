@@ -44,6 +44,23 @@
             AvlRoot = null;
         }
 
+        public T? GetValue(T valueToSearch)
+        {
+            if (AvlRoot == null) 
+                return default;
+            AvlNode<T> temp = AvlRoot;
+            while (temp != null)
+            {
+                if (temp.Value.CompareTo(valueToSearch) == 0)
+                    break;
+                if (temp.Value.CompareTo(valueToSearch) > 0)
+                    temp = temp.Left;
+                else
+                    temp = temp.Right;
+            }
+            return temp != null ? temp.Value : default;
+        }
+
         public void Insert(T value)
         {
             AvlRoot = DoInsert(AvlRoot, value);
