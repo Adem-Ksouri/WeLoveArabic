@@ -1,0 +1,36 @@
+name: CI (PR to develop/main)
+
+on:
+  pull_request:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    env:
+      DOTNET_VERSION: ${{ vars.DOTNET_VERSION || '10.0.x' }}
+      BUILD_CONFIGURATION: ${{ vars.BUILD_CONFIGURATION || 'Release' }}
+      SOLUTION_PROJECT: ${{ vars.SOLUTION_PROJECT }}
+      UTEST_CSPROJ: ${{ vars.UTEST_CSPROJ }}   
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore
+        run: dotnet restore "${{ env.SOLUTION_PROJECT }}"
+
+      - name: Build
+        run: dotnet build "${{ env.SOLUTION_PROJECT }}" --configuration "${{ env.BUILD_CONFIGURATION }}" --no-restore
+
+      - name: Test
+        run: dotnet test "${{ env.UTEST_CSPROJ }}" --configuration "${{ env.BUILD_CONFIGURATION }}" --no-build --verbosity normal
