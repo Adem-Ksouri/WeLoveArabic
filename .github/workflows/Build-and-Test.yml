@@ -2,9 +2,7 @@ name: CI (PR to develop/main)
 
 on:
   pull_request:
-    branches:
-      - develop
-      - main
+    branches: [develop, main]
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
@@ -13,6 +11,12 @@ jobs:
     name: Build & Test
     runs-on: ubuntu-latest
 
+    env:
+      DOTNET_VERSION: ${{ vars.DOTNET_VERSION || '10.0.x' }}
+      BUILD_CONFIGURATION: ${{ vars.BUILD_CONFIGURATION || 'Release' }}
+      SOLUTION_PROJECT: ${{ vars.SOLUTION_PROJECT }}
+      UTEST_CSPROJ: ${{ vars.UTEST_CSPROJ }}   
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -20,24 +24,13 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
-
-      - name: Locate solution
-        shell: bash
-        run: |
-          set -euo pipefail
-          SLN=$(find . -maxdepth 5 -name "*.sln" -print -quit)
-          if [ -z "${SLN}" ]; then
-            echo "No .sln found under repo root."
-            exit 1
-          fi
-          echo "SLN=${SLN}" >> "$GITHUB_ENV"
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore
-        run: dotnet restore "${{ env.SLN }}"
+        run: dotnet restore "${{ env.SOLUTION_PROJECT }}"
 
       - name: Build
-        run: dotnet build "${{ env.SLN }}" --configuration Release --no-restore
+        run: dotnet build "${{ env.SOLUTION_PROJECT }}" --configuration "${{ env.BUILD_CONFIGURATION }}" --no-restore
 
       - name: Test
-        run: dotnet test "${{ env.SLN }}" --configuration Release --no-build --verbosity normal
+        run: dotnet test "${{ env.UTEST_CSPROJ }}" --configuration "${{ env.BUILD_CONFIGURATION }}" --no-build --verbosity normal
