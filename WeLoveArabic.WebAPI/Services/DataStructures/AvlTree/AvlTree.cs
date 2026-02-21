@@ -1,4 +1,4 @@
-﻿namespace WeLoveArabic.WebAPI.Services.DataStructures
+﻿namespace WeLoveArabic.WebAPI.Services.DataStructures.AvlTree
 {
     public class AvlNode<T> where T : class, IComparable<T>
     {
@@ -13,6 +13,14 @@
             Left = null;
             Right = null;
             Height = 1;
+        }
+
+        public AvlNode(T value, AvlNode<T>? left, AvlNode<T>? right, int height) : this(value)
+        {
+            Value = value;
+            Left=left;
+            Right=right;
+            Height=height;
         }
 
         public void RecalcHeight()
@@ -42,6 +50,11 @@
 
         public AvlTree(){
             AvlRoot = null;
+        }
+
+        public AvlTree(AvlNode<T>? avlRoot)
+        {
+            AvlRoot=avlRoot;
         }
 
         public T? GetValue(T valueToSearch)
