@@ -1,6 +1,6 @@
 ﻿namespace WeLoveArabic.WebAPI.Services.DataStructures
 {
-    public class AvlNode<T> where T : IComparable<T>
+    public class AvlNode<T> where T : class, IComparable<T>
     {
         public T Value { get; set; }
         public AvlNode<T>? Left { get; set; }
@@ -36,7 +36,7 @@
         }
     }
 
-    public class AvlTree<T> where T : IComparable<T>
+    public class AvlTree<T> where T : class, IComparable<T>
     {
         private AvlNode<T>? AvlRoot;
 
@@ -47,8 +47,8 @@
         public T? GetValue(T valueToSearch)
         {
             if (AvlRoot == null) 
-                return default;
-            AvlNode<T> temp = AvlRoot;
+                return null;
+            AvlNode<T>? temp = AvlRoot;
             while (temp != null)
             {
                 if (temp.Value.CompareTo(valueToSearch) == 0)
@@ -58,7 +58,7 @@
                 else
                     temp = temp.Right;
             }
-            return temp != null ? temp.Value : default;
+            return temp?.Value;
         }
 
         public void Insert(T value)
