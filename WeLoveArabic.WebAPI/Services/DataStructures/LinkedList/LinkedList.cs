@@ -24,6 +24,10 @@
             Count = 0;
         }
 
+        public TLinkedListNode<T>? GetHead() => Head;
+
+        public TLinkedListNode<T>? GetTail() => Tail;
+
         public int GetSize() => Count;
 
         public void AddTail(T value)
@@ -33,7 +37,11 @@
             if (Head == null)
                 Head = Tail = node;
             else
+            {
+
                 Tail!.Next = node;
+                Tail = node;
+            }
 
             Count++;
         }
@@ -55,7 +63,9 @@
                     if (current == Tail)
                     {
                         Tail = previous;
-                        Tail!.Next = null;
+
+                        if (Tail != null)
+                            Tail.Next = null;
                     }
 
                     Count--;

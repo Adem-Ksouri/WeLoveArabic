@@ -24,5 +24,15 @@ namespace WeLoveArabic.WebAPI.Services.Models
 
             return hash;
         }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || obj.GetType() != typeof(DerivedWord))
+                return false;
+
+            DerivedWord other = (DerivedWord)obj;
+
+            return Word == other.Word;
+        }
     }
 }
