@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WeLoveArabic.WebAPI.Services.DataStructures.LinkedList;
+﻿using WeLoveArabic.WebAPI.Services.DataStructures.LinkedList;
 using WeLoveArabic.WebAPI.Services.Models;
 
 namespace WeLoveArabicTests
@@ -57,7 +52,7 @@ namespace WeLoveArabicTests
 
             Assert.False(isDeleted);
             Assert.Equal(3, linkedList.GetSize());
-            Assert.NotEqual(linkedList.GetTail()!.Value, wordToDelete);
+            Assert.NotEqual(wordToDelete, linkedList.GetTail()!.Value);
         }
 
         [Fact]
@@ -81,7 +76,7 @@ namespace WeLoveArabicTests
             bool isDeleted = linkedList.Delete(x => x.Equals(word));
 
             Assert.True(isDeleted);
-            Assert.NotEqual(linkedList.GetTail()!.Value, word);
+            Assert.NotEqual(word, linkedList.GetTail()!.Value);
             Assert.Equal(2, linkedList.GetSize());
         }
 
@@ -93,7 +88,7 @@ namespace WeLoveArabicTests
             bool isDeleted = linkedList.Delete(x => x.Equals(word));
 
             Assert.True(isDeleted);
-            Assert.NotEqual(linkedList.GetHead()!.Value, word);
+            Assert.NotEqual(word, linkedList.GetHead()!.Value);
             Assert.Equal(2, linkedList.GetSize());
         }
 
@@ -131,7 +126,7 @@ namespace WeLoveArabicTests
 
             Assert.NotNull(nodeFound);
             Assert.True(isFound);
-            Assert.Equal(nodeFound!.Value, wordToFind);
+            Assert.Equal(wordToFind, nodeFound!.Value);
         }
     }
 }

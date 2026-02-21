@@ -16,6 +16,14 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
             _buckets = new TLinkedList<KeyValuePair<TKey, TValue>>[Capacity];
         }
 
+        static private int GetBucketIndex(TKey key)
+        {
+            if (key == null)
+                return -1;
+
+            return key.CustomHash(Base, Mod);
+        }
+
         public TValue GetValue(TKey searchKey)
         {
             if (searchKey == null)
@@ -23,8 +31,10 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
 
             int index = GetBucketIndex(searchKey);
 
+            InitializeList(index);
+
             TLinkedListNode<KeyValuePair<TKey, TValue>>? node = index >= 0
-                ? _buckets[index].Find(x => x.Key!.Equals(searchKey))
+                ? _buckets[index].Find(x => x.Key.Equals(searchKey))
                 : null;
 
             return node == null ? default! : node.Value.Value;
@@ -37,21 +47,27 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
 
             int index = GetBucketIndex(searchKey);
 
-            return index >= 0 && _buckets[index].Exist(x => x.Key!.Equals(searchKey));
+            InitializeList(index);
+
+            return index >= 0 && _buckets[index].Exist(x => x.Key.Equals(searchKey));
         }
 
         public void Insert(TKey key, TValue value) =>
             DoInsert(key, value);
 
-        public void Remove(TKey key) =>
+        public void Update(TKey key, TValue value) =>
+            DoUpdate(key, value);
+
+        public bool Remove(TKey key) =>
             DoRemove(key);
 
-        static private int GetBucketIndex(TKey key)
+        private void InitializeList(int index)
         {
-            if (key == null)
-                return -1;
+            if (index == -1)
+                return;
 
-            return key.CustomHash(Base, Mod);
+            if (_buckets[index] == null)
+                _buckets[index] = new TLinkedList<KeyValuePair<TKey, TValue>>();
         }
 
         private void DoInsert(TKey key, TValue value)
@@ -60,16 +76,35 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
             if (index == -1)
                 return;
 
-            _buckets[index].AddTail(KeyValuePair.Create(key, value));
+            InitializeList(index);
+
+            if (!ContainsKey(key))
+                _buckets[index].AddTail(KeyValuePair.Create(key, value));
         }
 
-        private void DoRemove(TKey key)
+        private void DoUpdate(TKey key, TValue value)
         {
             int index = GetBucketIndex(key);
             if (index == -1)
                 return;
 
-            _buckets[index].Delete(x => x.Key!.Equals(key));
+            InitializeList(index);
+
+            TLinkedListNode<KeyValuePair<TKey, TValue>>? node = _buckets[index].Find(x => x.Key.Equals(key));
+
+            if (node != null)
+                node.Value = KeyValuePair.Create(key, value);
+        }
+
+        private bool DoRemove(TKey key)
+        {
+            int index = GetBucketIndex(key);
+            if (index == -1)
+                return false;
+
+            InitializeList(index);
+
+            return _buckets[index].Delete(x => x.Key.Equals(key));
         }
     }
 }
