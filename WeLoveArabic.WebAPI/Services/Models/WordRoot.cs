@@ -5,14 +5,15 @@ namespace WeLoveArabic.WebAPI.Services.Models
     public class WordRoot : IComparable<WordRoot>
     {
         public string Root { get; set; }
-        public HashTable<string, int> DerivedWords { get; set; }
+        public HashTable<DerivedWord, int> DerivedWords { get; set; }
 
         public WordRoot(string root)
         {
             Root = root;
-            DerivedWords = new HashTable<string, int>();
+            DerivedWords = new HashTable<DerivedWord, int>();
         }
-        public WordRoot(string root, HashTable<string, int> derivedWords)
+
+        public WordRoot(string root, HashTable<DerivedWord, int> derivedWords)
         {
             Root = root;
             DerivedWords = derivedWords;
