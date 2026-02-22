@@ -18,9 +18,9 @@
         public AvlNode(T value, AvlNode<T>? left, AvlNode<T>? right, int height) : this(value)
         {
             Value = value;
-            Left=left;
-            Right=right;
-            Height=height;
+            Left = left;
+            Right = right;
+            Height = height;
         }
 
         public void RecalcHeight()
@@ -54,7 +54,7 @@
 
         public AvlTree(AvlNode<T>? avlRoot)
         {
-            AvlRoot=avlRoot;
+            AvlRoot = avlRoot;
         }
 
         public T? GetValue(T valueToSearch)
