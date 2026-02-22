@@ -19,12 +19,33 @@ namespace WeLoveArabic.WebAPI.Services
             }
         }
 
+        public void DeleteArabicRoot(string root)
+        {
+            if (string.IsNullOrEmpty(root) || !_roots.Contains(new WordRoot(root)))
+                return;
+            _roots.Delete(new WordRoot(root));
+        }
+
         public void AddArabicSchemes(List<string> schemes)
         {
             foreach (var scheme in schemes)
             {
                 _schemes.Insert(new WordSchema(scheme), scheme);
             }
+        }
+
+        public void UpdateArabicScheme(string oldScheme, string newScheme)
+        {
+            if (string.IsNullOrEmpty(oldScheme) || string.IsNullOrEmpty(newScheme) || !_schemes.ContainsKey(new WordSchema(oldScheme)))
+                return;
+            _schemes.Update(new WordSchema(oldScheme), newScheme);
+        }
+
+        public void RemoveArabicScheme(string scheme)
+        {
+            if (string.IsNullOrEmpty(scheme) || !_schemes.ContainsKey(new WordSchema(scheme)))
+                return;
+            _schemes.Remove(new WordSchema(scheme));
         }
 
         public List<DerivedWord> GenerateArabicWords(string root, List<string> schemes)
