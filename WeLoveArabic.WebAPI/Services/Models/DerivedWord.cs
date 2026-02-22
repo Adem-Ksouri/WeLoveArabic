@@ -2,7 +2,7 @@
 
 namespace WeLoveArabic.WebAPI.Services.Models
 {
-    public class DerivedWord : ICustomHahsable
+    public class DerivedWord : ICustomHashable
     {
         public string Word { get; set; }
         public string Scheme {  get; set; }
@@ -25,7 +25,7 @@ namespace WeLoveArabic.WebAPI.Services.Models
             return hash;
         }
 
-        public override bool Equals(object? obj)
+        public bool IsEqual(object? obj)
         {
             if (obj == null || obj.GetType() != typeof(DerivedWord))
                 return false;

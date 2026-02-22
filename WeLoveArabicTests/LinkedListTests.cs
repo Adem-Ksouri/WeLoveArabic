@@ -28,8 +28,8 @@ namespace WeLoveArabicTests
 
             Assert.NotNull(linkedList.GetHead());
             Assert.NotNull(linkedList.GetTail());
-            Assert.Equal(word, linkedList.GetHead()!.Value);
-            Assert.Equal(word, linkedList.GetTail()!.Value);
+            Assert.True(word.IsEqual(linkedList.GetHead()!.Value));
+            Assert.True(word.IsEqual(linkedList.GetTail()!.Value));
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace WeLoveArabicTests
             DerivedWord word = new DerivedWord("جالس", "فاعل");
             linkedList.AddTail(word);
 
-            Assert.Equal(word, linkedList.GetTail()!.Value);
+            Assert.True(word.IsEqual(linkedList.GetTail()!.Value));
             Assert.Equal(4, linkedList.GetSize());
         }
 
@@ -48,19 +48,19 @@ namespace WeLoveArabicTests
         {
             InitializeLinkedList();
             DerivedWord wordToDelete = new DerivedWord("موجود", "مفعول");
-            bool isDeleted = linkedList.Delete(x => x.Equals(wordToDelete));
+            bool isDeleted = linkedList.Delete(x => x.IsEqual(wordToDelete));
 
             Assert.False(isDeleted);
             Assert.Equal(3, linkedList.GetSize());
-            Assert.NotEqual(wordToDelete, linkedList.GetTail()!.Value);
+            Assert.False(wordToDelete.IsEqual(linkedList.GetTail()!.Value));
         }
 
         [Fact]
-        public void Delete_ExistingValue_ReturnsEmptList_Test()
+        public void Delete_ExistingValue_ReturnsEmptyList_Test()
         {
             DerivedWord word = new DerivedWord("حذف", "فعل");
             linkedList.AddTail(word);
-            bool isDeleted = linkedList.Delete(x => x.Equals(word));
+            bool isDeleted = linkedList.Delete(x => x.IsEqual(word));
 
             Assert.True(isDeleted);
             Assert.Null(linkedList.GetHead());
@@ -73,10 +73,10 @@ namespace WeLoveArabicTests
         {
             InitializeLinkedList();
             DerivedWord word = new DerivedWord("كاتب", "فاعل");
-            bool isDeleted = linkedList.Delete(x => x.Equals(word));
+            bool isDeleted = linkedList.Delete(x => x.IsEqual(word));
 
             Assert.True(isDeleted);
-            Assert.NotEqual(word, linkedList.GetTail()!.Value);
+            Assert.False(word.IsEqual(linkedList.GetTail()!.Value));
             Assert.Equal(2, linkedList.GetSize());
         }
 
@@ -85,10 +85,10 @@ namespace WeLoveArabicTests
         {
             InitializeLinkedList();
             DerivedWord word = new DerivedWord("مكتوب", "مفعول");
-            bool isDeleted = linkedList.Delete(x => x.Equals(word));
+            bool isDeleted = linkedList.Delete(x => x.IsEqual(word));
 
             Assert.True(isDeleted);
-            Assert.NotEqual(word, linkedList.GetHead()!.Value);
+            Assert.False(word.IsEqual(linkedList.GetHead()!.Value));
             Assert.Equal(2, linkedList.GetSize());
         }
 
@@ -97,11 +97,11 @@ namespace WeLoveArabicTests
         {
             InitializeLinkedList();
             DerivedWord word = new DerivedWord("مرسوم", "مفعول");
-            bool isDeleted = linkedList.Delete(x => x.Equals(word));
+            bool isDeleted = linkedList.Delete(x => x.IsEqual(word));
 
             Assert.True(isDeleted);
             Assert.Equal(2, linkedList.GetSize());
-            Assert.Equal(linkedList.GetHead()!.Next!.Value, linkedList.GetTail()!.Value);
+            Assert.True(linkedList.GetHead()!.Next!.Value.IsEqual(linkedList.GetTail()!.Value));
         }
 
         [Fact]
@@ -109,8 +109,8 @@ namespace WeLoveArabicTests
         {
             InitializeLinkedList();
             DerivedWord wordToFind = new DerivedWord("موجود", "مفعول");
-            TLinkedListNode<DerivedWord>? nodeFound = linkedList.Find(x => x.Equals(wordToFind));
-            bool isFound = linkedList.Exist(x => x.Equals(wordToFind));
+            TLinkedListNode<DerivedWord>? nodeFound = linkedList.Find(x => x.IsEqual(wordToFind));
+            bool isFound = linkedList.Exist(x => x.IsEqual(wordToFind));
 
             Assert.Null(nodeFound);
             Assert.False(isFound);
@@ -121,12 +121,12 @@ namespace WeLoveArabicTests
         {
             InitializeLinkedList();
             DerivedWord wordToFind = new DerivedWord("مرسوم", "مفعول");
-            TLinkedListNode<DerivedWord>? nodeFound = linkedList.Find(x => x.Equals(wordToFind));
-            bool isFound = linkedList.Exist(x => x.Equals(wordToFind));
+            TLinkedListNode<DerivedWord>? nodeFound = linkedList.Find(x => x.IsEqual(wordToFind));
+            bool isFound = linkedList.Exist(x => x.IsEqual(wordToFind));
 
             Assert.NotNull(nodeFound);
             Assert.True(isFound);
-            Assert.Equal(wordToFind, nodeFound!.Value);
+            Assert.True(wordToFind.IsEqual(nodeFound!.Value));
         }
     }
 }

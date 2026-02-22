@@ -3,7 +3,7 @@ using WeLoveArabic.WebAPI.Services.Interfaces;
 
 namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
 {
-    public class HashTable<TKey, TValue> where TKey : ICustomHahsable
+    public class HashTable<TKey, TValue> where TKey : ICustomHashable
     {
         private const int Capacity = 1000003;
         private const int Mod = 1000003;
@@ -34,7 +34,7 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
             InitializeList(index);
 
             TLinkedListNode<KeyValuePair<TKey, TValue>>? node = index >= 0
-                ? _buckets[index].Find(x => x.Key.Equals(searchKey))
+                ? _buckets[index].Find(x => x.Key.IsEqual(searchKey))
                 : null;
 
             return node == null ? default! : node.Value.Value;
@@ -49,7 +49,7 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
 
             InitializeList(index);
 
-            return index >= 0 && _buckets[index].Exist(x => x.Key.Equals(searchKey));
+            return index >= 0 && _buckets[index].Exist(x => x.Key.IsEqual(searchKey));
         }
 
         public void Insert(TKey key, TValue value) =>
@@ -90,7 +90,7 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
 
             InitializeList(index);
 
-            TLinkedListNode<KeyValuePair<TKey, TValue>>? node = _buckets[index].Find(x => x.Key.Equals(key));
+            TLinkedListNode<KeyValuePair<TKey, TValue>>? node = _buckets[index].Find(x => x.Key.IsEqual(key));
 
             if (node != null)
                 node.Value = KeyValuePair.Create(key, value);
@@ -104,7 +104,7 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
 
             InitializeList(index);
 
-            return _buckets[index].Delete(x => x.Key.Equals(key));
+            return _buckets[index].Delete(x => x.Key.IsEqual(key));
         }
     }
 }
