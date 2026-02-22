@@ -56,7 +56,7 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
         private int GetBucketIndex(TKey key)
         {
             if (key == null)
-                return -1;
+                throw new ArgumentNullException(nameof(key));
 
             return key.CustomHash(Base, Mod);
         }
