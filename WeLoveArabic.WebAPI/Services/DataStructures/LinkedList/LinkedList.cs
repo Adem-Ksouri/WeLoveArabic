@@ -94,6 +94,18 @@
             return null;
         }
 
+        public IEnumerable<T> GetAll()
+        {
+            List<T> results = new List<T>();
+            TLinkedListNode<T>? current = Head;
+            while (current != null)
+            {
+                results.Add(current.Value);
+                current = current.Next;
+            }
+            return results;
+        }
+
         public bool Exist(Predicate<T> match)
         {
             TLinkedListNode<T>? current = Head;

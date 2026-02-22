@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WeLoveArabic.WebAPI.Models;
 using WeLoveArabic.WebAPI.Services;
-using WeLoveArabic.WebAPI.Services.Models;
 
 namespace WeLoveArabic.WebAPI.Controllers
 {
@@ -10,49 +9,67 @@ namespace WeLoveArabic.WebAPI.Controllers
     public class WeLoveArabicController : Controller
     {
         private readonly WeLoveArabicService _service;
-        
-        [HttpPost("addRoots")]
-        public IActionResult AddArabicRoot(List<string> roots)
+
+        public WeLoveArabicController(WeLoveArabicService service)
         {
+            _service = service;
+        }
+
+        [HttpPost("addRoots")]
+        public IActionResult AddArabicRoots(List<string> roots)
+        {
+            if (roots == null)
+                return BadRequest("Roots list cannot be null.");
+            
+            _service.AddArabicRoots(roots);
+        
             return Ok("Roots added!");
         }
 
         [HttpPost("addSchemes")]
-        public IActionResult AddArabicScheme(List<string> schemes)
+        public IActionResult AddArabicSchemas([FromBody] List<string> schemes)
         {
-            return Ok("Scheme added!");
+            if (schemes == null)
+                return BadRequest("Schemes list cannot be null.");
+
+            _service.AddArabicSchemes(schemes);
+
+            return Ok("Schemes added!");
         }
 
-        [HttpPost("generateWord")]
+        [HttpPost("generateWords")]
         public IActionResult GenerateArabicWords(string root, List<string> schemes)
         {
-            var result = new GenerateWordsResponse
+            var result = _service.GenerateArabicWords(root, schemes);
+            
+            return Json(new GenerateWordsResponse
             {
-                DerivedWords = new List<DerivedWord>()
-            };
-            return Json(result);
+                DerivedWords = result,
+            });
         }
 
         [HttpGet("verifyWord")]
         public IActionResult VerifyArabicWord(string root, string word)
         {
-            var result = new VerifyArabicWordResponse
+            string? result = _service.VerifyArabicWord(root, word);
+           
+            return Json(new VerifyArabicWordResponse
             {
-                Success = true,
-                Scheme = "",
-            };
-            return Json(result);
+                Success = result != null,
+                Scheme = result,
+            });
         }
 
         [HttpGet("listRootDetails")]
         public IActionResult ListRootDetails(string root)
         {
-            var result = new ListRootDetailsResponse
-            {   
-                Success = true,
-                DerivedWordsWithCount = new List<(DerivedWord, int)>(),
-            };
-            return Json(result);
+            var result = _service.ListRootDetails(root);
+
+            return Json(new ListRootDetailsResponse
+            {
+                Success = result != null,
+                DerivedWordsWithCount = result,
+            });
         }
     }
 }

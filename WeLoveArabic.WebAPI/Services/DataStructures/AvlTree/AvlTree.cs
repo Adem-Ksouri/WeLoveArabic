@@ -74,6 +74,11 @@
             return temp?.Value;
         }
 
+        public bool Contains(T valueToSearch)
+        {
+            return GetValue(valueToSearch) != null;
+        }
+
         public void Insert(T value)
         {
             AvlRoot = DoInsert(AvlRoot, value);

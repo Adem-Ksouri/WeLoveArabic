@@ -128,5 +128,15 @@ namespace WeLoveArabicTests
             Assert.True(isFound);
             Assert.True(wordToFind.IsEqual(nodeFound!.Value));
         }
+
+        [Fact]
+        public void GetAll_Test()
+        {
+            InitializeLinkedList();
+            List<DerivedWord> allWords = (List<DerivedWord>)linkedList.GetAll();
+
+            Assert.NotNull(allWords);
+            Assert.Equal(3, allWords.Count);
+        }
     }
 }
