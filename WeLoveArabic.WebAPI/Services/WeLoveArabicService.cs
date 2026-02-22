@@ -1,19 +1,14 @@
-﻿using WeLoveArabic.WebAPI.Services.DataStructures.RootAvlTree;
-using WeLoveArabic.WebAPI.Services.DataStructures.SchemaHashTable;
+﻿using WeLoveArabic.WebAPI.Services.DataStructures.AvlTree;
+using WeLoveArabic.WebAPI.Services.DataStructures.HashTable;
+using WeLoveArabic.WebAPI.Services.Models;
 
 namespace WeLoveArabic.WebAPI.Services
 {
     public class WeLoveArabicService
     {
-        private readonly SchemaHashTable _schemas;
-        private readonly RootAvlTree _roots;
+        private readonly HashTable<WordSchema, string> _schemas = new HashTable<WordSchema, string>();
+        private readonly AvlTree<WordRoot> _roots = new AvlTree<WordRoot>();
 
-        public WeLoveArabicService(
-            SchemaHashTable schemaHashTable,
-            RootAvlTree rootAvlTree)
-        {
-            _schemas = schemaHashTable;
-            _roots = rootAvlTree;
-        }
+
     }
 }
