@@ -15,18 +15,18 @@ function GeneratedRootScheme(props: GeneratedSchemesProps) {
 
   return (
     <div className="generated-schemes">
-      <h3>Résultats de génération</h3>
+      <h3>Tous les mots créés</h3>
 
       {results.length === 0 ? (
-        <p>Aucun mot généré pour le moment.</p>
+        <p>Aucun mot pour le moment.</p>
       ) : (
         <table className="generated-table">
           <thead>
             <tr>
               <th>Racine</th>
-              <th>Schème</th>
-              <th>Mot généré</th>
-              <th>Fréquence</th>
+              <th>Modèle</th>
+              <th>Mot</th>
+              <th>Nombre</th>
             </tr>
           </thead>
           <tbody>
@@ -36,7 +36,7 @@ function GeneratedRootScheme(props: GeneratedSchemesProps) {
                   <td>{item.root}</td>
                   <td>{item.scheme}</td>
                   <td className="generated-word">{item.word}</td>
-                  <td className="frequency">{item.frequency}</td>
+                  <td><strong>{item.frequency}</strong></td>
                 </tr>
               );
             })}

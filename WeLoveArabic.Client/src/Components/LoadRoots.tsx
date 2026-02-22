@@ -1,70 +1,115 @@
 import { useState } from "react";
+import { addArabicRoot } from "../api/weLoveArabicApi";
+import { useAppData } from "../state/AppDataContext";
 
 function LoadRoots(){
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [fileContent, setFileContent] = useState<string>("");
-    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [parsedRoots, setParsedRoots] = useState<string[]>([]);
+    const [message, setMessage] = useState<string>("");
+    const [isImporting, setIsImporting] = useState<boolean>(false);
+    const { addRoots } = useAppData();
 
-    function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
+    function parseRoots(rawContent: string) {
+        return rawContent
+            .split(/\r?\n/)
+            .map((line) => line.trim())
+            .filter((line) => line.length > 0);
+    }
+
+    function readFileAsText(file: File) {
+        return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                if (e.target && typeof e.target.result === "string") {
+                    resolve(e.target.result);
+                    return;
+                }
+
+                reject(new Error("Impossible de lire le fichier."));
+            };
+
+            reader.onerror = function () {
+                reject(new Error("Impossible de lire le fichier."));
+            };
+
+            reader.readAsText(file);
+        });
+    }
+
+    async function handleFileSelect(event: React.ChangeEvent<HTMLInputElement>) {
         if (!event.target.files || event.target.files.length === 0) {
             return;
         }
 
-        setSelectedFile(event.target.files[0]);
-        setFileContent("");      // reset ancien contenu
-        setIsVisible(false);     // cacher si on change de fichier
+        const file = event.target.files[0];
+        setSelectedFile(file);
+        setMessage("");
+
+        try {
+            const text = await readFileAsText(file);
+            const roots = parseRoots(text);
+            setFileContent(text);
+            setParsedRoots(roots);
+            setMessage(`${roots.length} racine(s) prêtes à être ajoutées.`);
+        } catch (error) {
+            setFileContent("");
+            setParsedRoots([]);
+            setMessage(error instanceof Error ? error.message : "Impossible de lire ce fichier.");
+        }
     }
 
-    function handleToggle() {
+    async function handleImportRoots() {
+        const roots = parsedRoots;
 
-        if (!selectedFile) {
-            alert("Veuillez sélectionner un fichier !");
+        if (roots.length === 0) {
+            setMessage("Aucune racine à ajouter.");
             return;
         }
 
-        // Si le contenu est déjà visible → on cache
-        if (isVisible) {
-            setIsVisible(false);
-            return;
+        try {
+            setIsImporting(true);
+            const results = await Promise.allSettled(
+                roots.map((root) => addArabicRoot(root))
+            );
+
+            const successfulCount = results.filter((result) => result.status === "fulfilled").length;
+
+            addRoots(roots);
+            setMessage(`${successfulCount}/${roots.length} racines ajoutées.`);
+        } catch (error) {
+            setMessage(error instanceof Error ? error.message : "Une erreur est survenue.");
+        } finally {
+            setIsImporting(false);
         }
-
-        // Sinon on lit le fichier puis on affiche
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-            if (e.target && typeof e.target.result === "string") {
-                setFileContent(e.target.result);
-                setIsVisible(true);
-            }
-        };
-
-        reader.readAsText(selectedFile);
     }
 
     return (
-        <div>
-            <h2>Importer un fichier .txt</h2>
+        <div className="load-roots">
+            <h3>Importer un fichier de racines</h3>
+            <p className="hint-text">Une racine par ligne.</p>
 
-            <input
-                type="file"
-                accept=".txt"
-                onChange={handleFileSelect}
-            />
+            <div className="control-row">
+                <input
+                    type="file"
+                    accept=".txt"
+                    onChange={handleFileSelect}
+                />
 
-            <br /><br />
+                <button onClick={handleImportRoots} disabled={!selectedFile || isImporting || parsedRoots.length === 0}>
+                    {isImporting ? "Ajout en cours..." : "Ajouter les racines"}
+                </button>
+            </div>
 
-            <button onClick={handleToggle}>
-                {isVisible ? "Cacher le contenu" : "Afficher le contenu"}
-            </button>
-
-            <br /><br />
-
-            {isVisible && (
+            {fileContent && (
                 <div>
                     <h3>Contenu :</h3>
-                    <pre>{fileContent}</pre>
+                    <pre className="content-preview">{fileContent}</pre>
                 </div>
             )}
+
+            {message && <p className="status-message">{message}</p>}
         </div>
     );
 }
