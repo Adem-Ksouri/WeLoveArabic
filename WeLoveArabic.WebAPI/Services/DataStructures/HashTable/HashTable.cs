@@ -16,14 +16,6 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
             _buckets = new TLinkedList<KeyValuePair<TKey, TValue>>[Capacity];
         }
 
-        static private int GetBucketIndex(TKey key)
-        {
-            if (key == null)
-                return -1;
-
-            return key.CustomHash(Base, Mod);
-        }
-
         public TValue GetValue(TKey searchKey)
         {
             if (searchKey == null)
@@ -60,6 +52,14 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
 
         public bool Remove(TKey key) =>
             DoRemove(key);
+
+        private int GetBucketIndex(TKey key)
+        {
+            if (key == null)
+                return -1;
+
+            return key.CustomHash(Base, Mod);
+        }
 
         private void InitializeList(int index)
         {
