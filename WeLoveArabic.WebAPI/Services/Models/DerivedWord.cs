@@ -5,8 +5,9 @@ namespace WeLoveArabic.WebAPI.Services.Models
     public class DerivedWord : ICustomHashable
     {
         public string Word { get; set; }
-        public string Scheme {  get; set; }
+        public string? Scheme {  get; set; }
 
+        public DerivedWord() { }
         public DerivedWord(string word, string scheme)
         {
             Word = word;

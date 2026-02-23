@@ -9,6 +9,16 @@ namespace WeLoveArabic.WebAPI.Services
         private readonly AvlTree<WordRoot> _roots = new AvlTree<WordRoot>();
         private readonly HashTable<WordSchema, string> _schemes = new HashTable<WordSchema, string>();
 
+        public List<WordRoot> GetAllRootsSorted()
+        {
+            return _roots.GetAllValuesSorted();
+        }
+
+        public List<WordSchema> GetAllSchemas()
+        {
+            return _schemes.GetStoredKeys().Select(kvp => kvp.Key).ToList();
+        }
+
         public void AddArabicRoots(List<string> roots)
         {
             foreach (var root in roots)
@@ -38,7 +48,8 @@ namespace WeLoveArabic.WebAPI.Services
         {
             if (string.IsNullOrEmpty(oldScheme) || string.IsNullOrEmpty(newScheme) || !_schemes.ContainsKey(new WordSchema(oldScheme)))
                 return;
-            _schemes.Update(new WordSchema(oldScheme), newScheme);
+            _schemes.Remove(new WordSchema(oldScheme));
+            _schemes.Insert(new WordSchema(newScheme), newScheme);
         }
 
         public void RemoveArabicScheme(string scheme)
@@ -64,7 +75,8 @@ namespace WeLoveArabic.WebAPI.Services
             foreach (var scheme in schemes)
             {
                 string derivedWord = ApplySchemeToRoot(root, scheme);
-                derivedWords.Add(new DerivedWord(derivedWord, scheme));
+                UpdateDerivedWordCountForRoot(root: root, scheme: scheme, derivedWord: derivedWord, valueToAdd: 1);
+                derivedWords.Add(new DerivedWord(word: derivedWord, scheme: scheme));
             }
             return derivedWords;
         }
@@ -75,12 +87,15 @@ namespace WeLoveArabic.WebAPI.Services
                 return null;
             if (!_roots.Contains(new WordRoot(root)))
                 return null;
-            List<KeyValuePair<WordSchema, string>> storedSchemes = _schemes.GetStoredKeys();
+            List<string> storedSchemes = _schemes.GetStoredKeys().Select(s => s.Key.Schema).ToList();
             foreach (var scheme in storedSchemes)
             {
-                string derivedWord = ApplySchemeToRoot(root, scheme.Key.Schema);
+                string derivedWord = ApplySchemeToRoot(root: root, scheme: scheme);
                 if (derivedWord == word)
-                    return scheme.Key.Schema;
+                {
+                    UpdateDerivedWordCountForRoot(root: root, scheme: scheme, derivedWord: derivedWord, valueToAdd: 1);
+                    return scheme;
+                }
             }
             return null;
         }
@@ -103,27 +118,35 @@ namespace WeLoveArabic.WebAPI.Services
         private string ApplySchemeToRoot(string root, string scheme)
         {
             string result = "";
-            for (int i = scheme.Length - 1; i >= 0; i--)
+            foreach (char c in scheme)
             {
-                if (scheme[i] == 'ف')
+                if (c == 'ف')
                 {
-                    result.Append(root[2]);
+                    result += root[0];
                 }
-                else if (scheme[i] == 'ع')
+                else if (c == 'ع')
                 {
-                    result.Append(root[1]);
+                    result += root[1];
                 }
-                else if (scheme[i] == 'ل')
+                else if (c == 'ل')
                 {
-                    result.Append(root[0]);
+                    result += root[2];
                 }
                 else
                 {
-                    result.Append(scheme[i]);
+                    result += c;
                 }
             }
-            result.Reverse();
             return result;
+        }
+
+        private void UpdateDerivedWordCountForRoot(string root, string scheme, string derivedWord, int valueToAdd)
+        {
+            WordRoot? rootValue = _roots.GetValue(new WordRoot(root));
+            if (rootValue != null)
+            {
+                rootValue.UpdateDerivedWordCount(derivedWord: derivedWord, scheme: scheme, valueToAdd: 1);
+            }
         }
     }
 }

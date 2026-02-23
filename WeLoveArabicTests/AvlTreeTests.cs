@@ -16,13 +16,13 @@ namespace WeLoveArabicTests
             // Manually build the tree structure
             //        root2
             //       /     \
-            //    root1   root3
+            //    root3   root1
             AvlNode<WordRoot> node2 = new AvlNode<WordRoot>(root2);
             AvlNode<WordRoot> node1 = new AvlNode<WordRoot>(root1);
             AvlNode<WordRoot> node3 = new AvlNode<WordRoot>(root3);
 
-            node2.Left = node1;
-            node2.Right = node3;
+            node2.Left = node3;
+            node2.Right = node1;
             node2.Height = 2;
             node1.Height = 1;
             node3.Height = 1;
@@ -46,6 +46,18 @@ namespace WeLoveArabicTests
             WordRoot existingValueWordRoot = new WordRoot(existingValueStr);
             _avlTree.Insert(existingValueWordRoot);
             Assert.Equal(existingValueWordRoot, _avlTree.GetValue(existingValueWordRoot));
+        }
+
+        [Fact]
+        public void GetAllValuesSorted_Test()
+        {
+            InitializeAvlTree();
+            List<WordRoot> sortedValues = _avlTree.GetAllValuesSorted();
+            Assert.NotNull(sortedValues);
+            Assert.Equal(3, sortedValues.Count);
+            Assert.Equal("رسم", sortedValues[0].Root);
+            Assert.Equal("رفع", sortedValues[1].Root);
+            Assert.Equal("كتب", sortedValues[2].Root);
         }
 
         [Fact]

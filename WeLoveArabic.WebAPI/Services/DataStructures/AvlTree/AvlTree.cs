@@ -74,6 +74,13 @@
             return temp?.Value;
         }
 
+        public List<T> GetAllValuesSorted()
+        {
+            List<T> values = new List<T>();
+            DoGetAllValuesSorted(AvlRoot, values);
+            return values;
+        }
+
         public bool Contains(T valueToSearch)
         {
             return GetValue(valueToSearch) != null;
@@ -84,9 +91,27 @@
             AvlRoot = DoInsert(AvlRoot, value);
         }
 
+        public void Update(T oldValue, T newValue)
+        {
+            if (Contains(oldValue))
+            {
+                Delete(oldValue);
+                Insert(newValue);
+            }
+        }
+
         public void Delete(T value)
         {
             AvlRoot = DoDelete(AvlRoot, value);
+        }
+
+        private void DoGetAllValuesSorted(AvlNode<T>? node, List<T> values)
+        {
+            if (node == null)
+                return;
+            DoGetAllValuesSorted(node.Left, values);
+            values.Add(node.Value);
+            DoGetAllValuesSorted(node.Right, values);
         }
 
         private AvlNode<T> DoInsert(AvlNode<T>? node, T valueToInsert)

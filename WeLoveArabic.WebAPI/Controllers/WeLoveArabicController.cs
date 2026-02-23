@@ -15,6 +15,24 @@ namespace WeLoveArabic.WebAPI.Controllers
             _service = service;
         }
 
+        [HttpGet("getRootsSorted")]
+        public IActionResult GetRootsSorted() {
+            var result = _service.GetAllRootsSorted();
+            return Json(new GetRootsSortedResponse
+            {
+                Roots = result.Select(r => r.Root).ToList(),
+            });
+        }
+
+        [HttpGet("getSchemas")]
+        public IActionResult GetSchemas() {
+            var result = _service.GetAllSchemas();
+            return Json(new GetSchemasResponse
+            {
+                Schemas = result.Select(s => s.Schema).ToList(),
+            });
+        }
+
         [HttpPost("addRoots")]
         public IActionResult AddArabicRoots(List<string> roots)
         {

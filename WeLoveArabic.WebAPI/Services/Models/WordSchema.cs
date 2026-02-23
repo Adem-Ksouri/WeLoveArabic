@@ -13,14 +13,14 @@ namespace WeLoveArabic.WebAPI.Services.Models
 
         public int CustomHash(int cbase, int mod)
         {
-            int hash = 0, pow = 1;
+            long hash = 0, pow = 1;
             for (int i = 0; i < Schema.Length; i++)
             {
                 hash = (hash + pow * Schema[i] % mod) % mod;
                 pow = pow * cbase % mod;
             }
 
-            return hash;
+            return (int)hash;
         }
 
         public bool IsEqual(object? obj)

@@ -22,30 +22,22 @@ namespace WeLoveArabic.WebAPI.Services.Models
         public int CompareTo(WordRoot? other)
         {
             if (other == null) return 1;
-            return CompareFromRight(Root, other.Root);
+            return Root.CompareTo(other.Root);
         }
 
-        private int CompareFromRight(string? a, string? b)
+        public void UpdateDerivedWordCount(string derivedWord, string scheme, int valueToAdd)
         {
-            if (a is null) return -1;
-            if (b is null) return 1;
-
-            int i = a.Length - 1;
-            int j = b.Length - 1;
-
-            while (i >= 0 && j >= 0)
+            if (string.IsNullOrEmpty(derivedWord))
+                return;
+            var key = new DerivedWord(derivedWord, scheme);
+            // If the derived word doesn't exist, insert it with the initial count. Otherwise, update the existing count.
+            if (!DerivedWords.ContainsKey(key))
             {
-                char ca = a[i];
-                char cb = b[j];
-
-                if (ca != cb)
-                    return ca.CompareTo(cb); 
-
-                i--;
-                j--;
+                DerivedWords.Insert(key, valueToAdd);
+                return;
             }
-
-            return a.Length.CompareTo(b.Length);
+            int currentCount = DerivedWords.GetValue(key);
+            DerivedWords.Update(key, currentCount + valueToAdd);
         }
     }
 }
