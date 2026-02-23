@@ -119,7 +119,13 @@ export default function GenerateFromSchemes() {
           {usedSchemes.map((scheme, index) => (
             <li key={index}>
               {scheme}{" "}
-              <button onClick={() => handleRemoveScheme(scheme)}>Supprimer</button>
+              <button
+                type="button"
+                aria-label={`Supprimer le schème ${scheme}`}
+                onClick={() => handleRemoveScheme(scheme)}
+              >
+                ×
+              </button>
             </li>
           ))}
         </ul>
