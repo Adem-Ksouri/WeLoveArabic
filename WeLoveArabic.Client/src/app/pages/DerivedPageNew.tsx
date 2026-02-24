@@ -8,12 +8,12 @@ import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { FileText, TrendingUp, Search, Award, Clock, Hash } from 'lucide-react';
 import { toast } from 'sonner';
-import { listRootDetailsApi } from '../utils/api';
+import { listAllRootsDetailsApi, listRootDetailsApi } from '../utils/api';
 
 export default function DerivedPageNew() {
   const location = useLocation();
   const { roots, schemas, derivedWords, getSchemaById, getRootById } = useMorphology();
-  const [selectedRootId, setSelectedRootId] = useState('');
+  const [selectedRootId, setSelectedRootId] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredWords, setFilteredWords] = useState(derivedWords);
   const [isSearching, setIsSearching] = useState(false);
@@ -26,17 +26,8 @@ export default function DerivedPageNew() {
     }
   }, [location.search]);
 
-  useEffect(() => {
-    // Update filtered words when derivedWords or selectedRootId changes
-    const filtered = derivedWords.filter((w) => {
-      const matchesRoot = selectedRootId && selectedRootId !== 'all' ? w.rootId === selectedRootId : true;
-      return matchesRoot;
-    });
-    setFilteredWords(filtered);
-  }, [derivedWords, selectedRootId]);
-
-  const handleSearch = async () => {
-    if (!searchQuery.trim() && (!selectedRootId || selectedRootId === 'all')) {
+  const handleSearch = async (showToast = true) => {
+    if (!searchQuery.trim() && !selectedRootId) {
       const filtered = derivedWords.filter((w) => {
         const matchesRoot = selectedRootId && selectedRootId !== 'all' ? w.rootId === selectedRootId : true;
         return matchesRoot;
@@ -55,7 +46,32 @@ export default function DerivedPageNew() {
         return matchesRoot && matchesSearch;
       });
 
-      if (selectedRootId && selectedRootId !== 'all') {
+      if (selectedRootId === 'all') {
+        const apiData = await listAllRootsDetailsApi();
+        const apiWords = apiData.derivedWordsWithCount
+          .filter((item) =>
+            searchQuery.trim()
+              ? item.word.toLowerCase().includes(searchQuery.toLowerCase())
+              : true
+          )
+          .map((item) => {
+            const matchingSchema = item.scheme
+              ? schemas.find((schema) => schema.pattern === item.scheme || schema.name === item.scheme)
+              : undefined;
+
+            return {
+              id: `all-${item.word}`,
+              rootId: '',
+              schemaId: matchingSchema?.id || item.scheme || '',
+              word: item.word,
+              frequency: item.count,
+              createdAt: new Date().toISOString(),
+              lastUsed: new Date().toISOString(),
+            };
+          });
+
+        results = apiWords;
+      } else if (selectedRootId) {
         const root = getRootById(selectedRootId);
 
         if (root) {
@@ -89,9 +105,13 @@ export default function DerivedPageNew() {
       }
       
       setFilteredWords(results);
-      toast.success(`✅ ${results.length} résultat(s) trouvé(s)`);
+      if (showToast) {
+        toast.success(`✅ ${results.length} résultat(s) trouvé(s)`);
+      }
     } catch (error) {
-      toast.error('❌ Erreur lors de la recherche');
+      if (showToast) {
+        toast.error('❌ Erreur lors de la recherche');
+      }
       console.error('Search error:', error);
     } finally {
       setIsSearching(false);
@@ -99,10 +119,10 @@ export default function DerivedPageNew() {
   };
 
   useEffect(() => {
-    if (selectedRootId && selectedRootId !== 'all') {
-      void handleSearch();
+    if (selectedRootId) {
+      void handleSearch(false);
     }
-  }, [selectedRootId]);
+  }, [selectedRootId, derivedWords]);
 
   const sortedWords = [...filteredWords].sort((a, b) => b.frequency - a.frequency);
 

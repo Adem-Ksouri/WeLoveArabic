@@ -196,3 +196,34 @@ export async function listRootDetailsApi(root: string): Promise<{ success: boole
     derivedWordsWithCount,
   };
 }
+
+export async function listAllRootsDetailsApi(): Promise<{ success: boolean; derivedWordsWithCount: ApiRootDetailPair[] }> {
+  const data = await requestJson<ListRootDetailsResponse>(`${API_BASE_URL}/listAllRootsDetails`);
+
+  const derivedWordsWithCount = (data.derivedWordsWithCount ?? data.DerivedWordsWithCount ?? [])
+    .map((pair) => {
+      const key = pair.Key ?? pair.key;
+      const value = pair.Value ?? pair.value ?? 0;
+
+      if (!key) {
+        return null;
+      }
+
+      const normalized = normalizeDerivedWord(key);
+      if (!normalized.word) {
+        return null;
+      }
+
+      return {
+        word: normalized.word,
+        scheme: normalized.scheme,
+        count: Number.isFinite(value) ? value : 0,
+      };
+    })
+    .filter((item): item is ApiRootDetailPair => item !== null);
+
+  return {
+    success: data.success ?? data.Success ?? false,
+    derivedWordsWithCount,
+  };
+}
