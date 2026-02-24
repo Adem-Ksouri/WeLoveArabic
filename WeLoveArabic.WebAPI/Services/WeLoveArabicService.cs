@@ -115,6 +115,19 @@ namespace WeLoveArabic.WebAPI.Services
             return null;
         }
 
+        public List<KeyValuePair<DerivedWord, int>> ListAllRootsDetails()
+        {
+            List<WordRoot> rootList = _roots.GetAllValuesSorted();
+
+            List<KeyValuePair<DerivedWord, int>> result = new List<KeyValuePair<DerivedWord, int>>();
+            foreach (WordRoot root in rootList)
+            {
+                result.AddRange(root.DerivedWords.GetStoredKeys());
+            }
+
+            return result;
+        }
+
         private string ApplySchemeToRoot(string root, string scheme)
         {
             string result = "";

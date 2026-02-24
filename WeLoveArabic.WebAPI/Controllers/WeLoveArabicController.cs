@@ -89,5 +89,17 @@ namespace WeLoveArabic.WebAPI.Controllers
                 DerivedWordsWithCount = result,
             });
         }
+
+        [HttpGet("listAllRootsDetails")]
+        public IActionResult ListAllRootsDetails()
+        {
+            var result = _service.ListAllRootsDetails();
+
+            return Json(new ListRootDetailsResponse
+            {
+                Success = result != null,
+                DerivedWordsWithCount = result
+            });
+        }
     }
 }
