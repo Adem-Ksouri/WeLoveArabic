@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using WeLoveArabic.WebAPI.Services.DataStructures.HashTable;
-using WeLoveArabic.WebAPI.Services.DataStructures.LinkedList;
+﻿using WeLoveArabic.WebAPI.Services.DataStructures.HashTable;
 using WeLoveArabic.WebAPI.Services.Models;
 
 namespace WeLoveArabicTests
@@ -83,6 +81,17 @@ namespace WeLoveArabicTests
 
             Assert.True(isRemoved);
             Assert.False(hashTable.ContainsKey(wordToRemove));
+        }
+
+        [Fact]
+        public void GetStoredKeys_Test()
+        {
+            InitializeHashTable();
+            List<KeyValuePair<DerivedWord, int>> storedKeys = hashTable.GetStoredKeys();
+            Assert.Equal(3, storedKeys.Count);
+            Assert.Contains(storedKeys, kvp => kvp.Key.IsEqual(new DerivedWord("مكتوب", "مفعول")) && kvp.Value == 1);
+            Assert.Contains(storedKeys, kvp => kvp.Key.IsEqual(new DerivedWord("مرسوم", "مفعول")) && kvp.Value == 3);
+            Assert.Contains(storedKeys, kvp => kvp.Key.IsEqual(new DerivedWord("كاتب", "فاعل")) && kvp.Value == 0);
         }
     }
 }

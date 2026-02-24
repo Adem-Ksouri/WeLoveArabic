@@ -32,6 +32,19 @@ namespace WeLoveArabic.WebAPI.Services.DataStructures.HashTable
             return node == null ? default! : node.Value.Value;
         }
 
+        public List<KeyValuePair<TKey, TValue>> GetStoredKeys()
+        {
+            var keys = new List<KeyValuePair<TKey, TValue>>();
+            foreach (var bucket in _buckets)
+            {
+                if (bucket != null)
+                {
+                    keys.AddRange(bucket.GetAll());
+                }
+            }
+            return keys;
+        }
+
         public bool ContainsKey(TKey searchKey)
         {
             if (searchKey == null)
