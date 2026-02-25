@@ -1,3 +1,6 @@
 <Solution>
+  <Folder Name="/Test/">
+    <Project Path="../WeLoveArabicTests/WeLoveArabicTests.csproj" Id="b8adfb4d-0127-41ea-8419-e6ae7b134bf0" />
+  </Folder>
   <Project Path="WeLoveArabic.WebAPI.csproj" />
 </Solution>
